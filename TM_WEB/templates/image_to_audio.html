@@ -1,10 +1,43 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Add Image Feed</h2>
+<h2>Audio from image colors</h2>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Upload Image</button>
+    <button type="submit">Upload Image (.png)</button>
 </form>
+<p>
+{% for feed in feeds %}
+<div class="card mb-3">
+    <div class="card-header">
+        <form method="post">
+            {% csrf_token %}
+            <button type='submit' name="process" value="{{ feed.id }}" class="btn btn-secondary">Process Image</button>
+        </form>
+    </div>
+    <div class="card-body">
+        <h4>{{ feed.name }}</h4>
+        <a href="{{ feed.image.url }}" target="_blank">
+            <img src="{{ feed.image.url }}" alt="Original Image" style="width: 95%; height: 500px;">
+        </a>
+        <p>
+
+        {% if feed.processed_to_audio %}
+        <a href="{{ feed.processed_to_audio.url }}" target="_blank">
+            <audio class = "audioPlayer uniqueShowAP" controls style="width: 95%">
+                <source src={{ feed.processed_to_audio.url }}>
+                Your browser does not support the
+                <code>audio</code> element.
+            </audio>
+        </a>
+        {% endif %}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="delete" value="{{ feed.id }}">Delete</button>
+    </form>
+</div>
+{% endfor %}
 {% endblock %}
