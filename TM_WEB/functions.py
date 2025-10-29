@@ -9,7 +9,6 @@ import imageio.v3 as imageio
 
 
 def audio_to_image(audio_file, filename):
-    # with wave.open(audio_file, 'rb') as audio:
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         file = read(audio_file)
@@ -22,8 +21,6 @@ def audio_to_image(audio_file, filename):
         transpose_rate = 2 ** 31-1
     audio = np.array(file[1] * transpose_rate, dtype=np.int64)
     print(audio)
-    audio = np.insert(audio, 0, len(file[1]))
-    audio = np.insert(audio, 0, transpose_rate)
     width = round(math.sqrt(len(audio)))
     print('1:', audio)
     audio = np.append(audio, np.zeros(abs(len(audio) - width ** 2), dtype=np.int32))
@@ -38,8 +35,6 @@ def audio_to_image(audio_file, filename):
 
 def to_audio(a):
     return np.int32(a[0]) + np.int32(a[1]) * 2 ** 8 + np.int32(a[2]) * 2 ** 16 + np.int32(a[3]) * 2 ** 24
-    # return np.int32(a[0]) * 2 ** 24 + np.int32(a[1]) * 2 ** 16 + np.int32(a[2]) * 2 ** 8 + np.int32(a[3])
-
 
 def image_to_audio(image_file, filename):
     file = imageio.imread(image_file)
@@ -48,11 +43,6 @@ def image_to_audio(image_file, filename):
 
     data = np.reshape(data, (np.size(data) // 4, 4))
     wavfile = np.apply_along_axis(to_audio, 1, data)
-    transpose_rate, length_ = np.take(wavfile, [0, 1])
-    print(transpose_rate, length_, wavfile)
-    wavfile = np.delete(wavfile, np.s_[length_:wavfile.size], 0)
-    wavfile = np.delete(wavfile, np.s_[0:1], 0)
-    print(wavfile, wavfile / transpose_rate)
     write(f'media/audio/{filename[:-4]}.wav', 44100, wavfile)
     return f'audio/{filename[:-4]}.wav'
 
