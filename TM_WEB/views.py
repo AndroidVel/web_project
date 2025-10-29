@@ -4,10 +4,8 @@ from .models import AudioFeed, ImageFeed, ImageAudioFeed, AudioImageFeed
 from .functions import audio_to_image as a_to_i, image_to_audio as i_to_a, image_and_audio_to_image as i_and_a_to_i
 from .functions import audio_from_image as a_from_i
 
-
 def home(request):
-    return render(request, 'home.html')
-
+    return render(request, 'base.html')
 
 def audio_to_image(request):
     if request.method == 'POST':
@@ -16,7 +14,7 @@ def audio_to_image(request):
             image.delete()
         elif 'process' in request.POST:
             audio = AudioFeed.objects.get(id=int(request.POST['process']))
-            audio.processed_to_image = a_to_i('../SiteforTM/media/' + audio.audio.name, audio.audio.name[6::])
+            audio.processed_to_image = a_to_i('./media/' + audio.audio.name, audio.audio.name[6::])
             audio.save()
 
         else:
@@ -39,7 +37,7 @@ def image_to_audio(request):
             image.delete()
         elif 'process' in request.POST:
             image = ImageFeed.objects.get(id=int(request.POST['process']))
-            image.processed_to_audio = i_to_a('../SiteforTM/media/' + image.image.name, image.image.name[7::])
+            image.processed_to_audio = i_to_a('./media/' + image.image.name, image.image.name[7::])
             image.save()
         else:
             print(request.FILES)
@@ -64,7 +62,7 @@ def audio_insert_in_image(request):
             image = ImageAudioFeed.objects.get(id=int(request.POST['process']))
             quality = int(request.POST['quality'])
             image.processed_image.delete()
-            image.processed_image = i_and_a_to_i('../SiteforTM/media/' + image.image.name, '../SiteforTM/media/' + image.audio.name,  image.name, quality)
+            image.processed_image = i_and_a_to_i('./media/' + image.image.name, '../SiteforTM/media/' + image.audio.name,  image.name, quality)
             image.save()
         else:
             print(request.FILES)
@@ -87,7 +85,7 @@ def audio_from_image(request):
         elif 'process' in request.POST:
             image = AudioImageFeed.objects.get(id=int(request.POST['process']))
             image.processed_to_audio.delete()
-            image.processed_to_audio = a_from_i('../SiteforTM/media/' + image.image.name, image.image.name[7::])
+            image.processed_to_audio = a_from_i('./media/' + image.image.name, image.image.name[7::])
             image.save()
         else:
             print(request.FILES)
